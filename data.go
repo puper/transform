@@ -24,6 +24,18 @@ func (this *DataBase) SetKeyConvertor(keyIn, keyOut func(string) string) {
 	this.KeyOut = keyOut
 }
 
+func (this *DataBase) Set(key string, value interface{}) error {
+	return nil
+}
+
+func (this *DataBase) Get(key string) (interface{}, error) {
+	return nil, nil
+}
+
+func (this *GroupData) KVs() []*KV {
+	return []*KV{}
+}
+
 type DataOption func(Data)
 
 func KeyConvertor(keyIn, keyOut func(string) string) DataOption {

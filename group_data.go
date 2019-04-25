@@ -1,50 +1,27 @@
 package transform
 
-// @TODO
+import "strings"
+
+// GroupData Only for source.
 type GroupData struct {
 	*DataBase
-	Data map[string]interface{}
-}
-
-func (this *GroupData) Set(key string, value interface{}) error {
-	key = this.KeyIn(key)
-	this.Data[key] = value
-	return nil
+	Data map[string]Data
 }
 
 func (this *GroupData) Get(key string) (interface{}, error) {
-	key = this.KeyIn(key)
-	if v, ok := this.Data[key]; ok {
-		return v, nil
+	keys := strings.Split(key, ".")
+	if len(keys) == 2 {
+		if d, ok := this.Data[keys[0]]; ok {
+			return d.Get(keys[1])
+		}
+		return nil, ErrNotFound
 	}
-	return nil, ErrNotFound
+	return nil, ErrTypeNotMatched
 }
 
-func (this *GroupData) KVs() []*KV {
-	kvs := make([]*KV, 0, len(this.Data))
-	for k, v := range this.Data {
-		kvs = append(kvs, &KV{
-			Key:   this.KeyOut(k),
-			Value: v,
-		})
-	}
-	return kvs
-}
-
-func Group(
-	v map[string]interface{},
-	keys []string,
-	options ...DataOption,
-) *MapData {
-	d := &MapData{
+func Group(data map[string]Data) *GroupData {
+	return &GroupData{
 		DataBase: NewDataBase(),
-		Data:     v,
+		Data:     data,
 	}
-	for _, key := range keys {
-		d.Data[key] = nil
-	}
-	for _, option := range options {
-		option(d)
-	}
-	return d
 }
