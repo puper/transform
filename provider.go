@@ -2,6 +2,8 @@ package transform
 
 import (
 	"reflect"
+
+	"github.com/kataras/iris"
 )
 
 type Provider interface {
@@ -11,6 +13,9 @@ type Provider interface {
 }
 
 func DetectProvider(v interface{}) Provider {
+	if ctx, ok := v.(iris.Context); ok {
+		return NewIrisContextProvider(ctx)
+	}
 	rv := Indirect(v)
 	if rv.Type().Implements(reflect.TypeOf((*Provider)(nil)).Elem()) {
 		return rv.Interface().(Provider)

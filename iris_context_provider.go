@@ -11,12 +11,21 @@ type IrisContextProvider struct {
 	context iris.Context
 }
 
+func NewIrisContextProvider(v interface{}) *IrisContextProvider {
+	if ctx, ok := v.(iris.Context); ok {
+		return &IrisContextProvider{
+			context: ctx,
+		}
+	}
+	panic(ErrTypeNotMatch)
+}
+
 func (this *IrisContextProvider) Set(f string, v interface{}) error {
 	return nil
 }
 
 func (this *IrisContextProvider) Get(f string) (interface{}, error) {
-	fs := strings.SplitN(f, ".", 1)
+	fs := strings.SplitN(f, ".", 2)
 	if len(fs) != 2 {
 		panic(ErrFieldNotFound)
 	}
