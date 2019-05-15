@@ -37,3 +37,36 @@ func main() {
 }
 
 ```
+
+```
+package main
+
+import (
+	"github.com/kataras/iris"
+	"github.com/puper/transform"
+)
+
+func main() {
+	app := iris.Default()
+	app.Post("/", func(ctx iris.Context) {
+		req := &struct {
+			A string
+			B string
+			C string
+		}{}
+		err := transform.New().CustomMapper(
+			map[string]string{
+				"A": "post.a",
+				"B": "query.b",
+				"C": "query.d",
+			},
+		).Process(ctx, req)
+		ctx.JSON(iris.Map{
+			"err":  err,
+			"data": req,
+		})
+	})
+	app.Run(iris.Addr(":8080"))
+}
+
+```
