@@ -6,6 +6,8 @@ import (
 	"github.com/puper/php2go"
 )
 
+type FieldMapper func(string) string
+
 func NoChange(key string) string {
 	return key
 }

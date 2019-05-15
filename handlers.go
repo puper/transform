@@ -5,80 +5,41 @@ import (
 	"strings"
 )
 
-func KeyMapping(keys ...string) Option {
-	var (
-		aKey, bKey string
-	)
-	if len(keys) == 2 {
-		aKey = keys[0]
-		bKey = keys[1]
-	} else {
-		aKey = keys[0]
-		bKey = keys[0]
+type FieldHandler func(interface{}) (interface{}, error)
+
+func StringTrimSpace(a interface{}) (interface{}, error) {
+	if av, ok := a.(string); ok {
+		return strings.TrimSpace(av), nil
 	}
-	return func(c *Config) {
-		c.Handlers[bKey] = func(a Data, b Data) error {
-			v, err := a.Get(aKey)
-			if err != nil {
-				return err
-			}
-			return b.Set(bKey, v)
-		}
-	}
+	return a, ErrTypeNotMatch
 }
 
-func StringToInt(keys ...string) Option {
-	var (
-		aKey, bKey string
-	)
-	if len(keys) == 2 {
-		aKey = keys[0]
-		bKey = keys[1]
-	} else {
-		aKey = keys[0]
-		bKey = keys[0]
+func StringToInt(a interface{}) (interface{}, error) {
+	if av, ok := a.(string); ok {
+		return strconv.Atoi(av)
 	}
-	return func(c *Config) {
-		c.Handlers[bKey] = func(a Data, b Data) error {
-			v, err := a.Get(aKey)
-			if err != nil {
-				return err
-			}
-			vs, ok := v.(string)
-			if ok {
-				vi, err := strconv.Atoi(vs)
-				if err != nil {
-					return err
-				}
-				return b.Set(bKey, vi)
-			}
-			return ErrTypeNotMatched
-		}
-	}
+	return a, ErrTypeNotMatch
 }
 
-func StringToStringSlice(keys ...string) Option {
-	var (
-		aKey, bKey string
-	)
-	if len(keys) == 2 {
-		aKey = keys[0]
-		bKey = keys[1]
-	} else {
-		aKey = keys[0]
-		bKey = keys[0]
+func StringToStringSlice(a interface{}) (interface{}, error) {
+	if av, ok := a.(string); ok {
+		return strings.Split(av, ","), nil
 	}
-	return func(c *Config) {
-		c.Handlers[bKey] = func(a Data, b Data) error {
-			v, err := a.Get(aKey)
-			if err != nil {
-				return err
-			}
-			vs, ok := v.(string)
-			if ok {
-				return b.Set(bKey, strings.Split(vs, ","))
-			}
-			return ErrTypeNotMatched
+	return a, ErrTypeNotMatch
+}
+
+func StringToIntSlice(a interface{}) (interface{}, error) {
+	a, err := StringToStringSlice(a)
+	if err != nil {
+		return a, err
+	}
+	bv := []int{}
+	for _, row := range a.([]string) {
+		rowInt, err := strconv.Atoi(row)
+		if err != nil {
+			return a, ErrConvertFailed
 		}
+		bv = append(bv, rowInt)
 	}
+	return bv, nil
 }
