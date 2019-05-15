@@ -120,10 +120,11 @@ func (this *Transform) CustomMapper(mapper map[string]string) *Transform {
 	return this
 }
 
-func (this *Transform) IgnoreErrors(errs ...error) {
+func (this *Transform) IgnoreErrors(errs ...error) *Transform {
 	for _, err := range errs {
 		this.ignoreErrors[err] = true
 	}
+	return this
 }
 
 func (this *Transform) isIgnoreOrNilError(err error) bool {

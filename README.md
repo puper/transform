@@ -1,4 +1,5 @@
 # struct to map，map to struct， map to map， struct to struct
+# parse iris.Context to custom request struct
 # example:
 ```
 package main
@@ -37,7 +38,7 @@ func main() {
 }
 
 ```
-
+# support iris context
 ```
 package main
 
@@ -50,7 +51,7 @@ func main() {
 	app := iris.Default()
 	app.Post("/", func(ctx iris.Context) {
 		req := &struct {
-			A string
+			A int
 			B string
 			C string
 		}{}
@@ -60,7 +61,10 @@ func main() {
 				"B": "query.b",
 				"C": "query.d",
 			},
-		).Process(ctx, req)
+		).
+			FieldHandler(transform.StringToInt, "A").
+			IgnoreErrors(transform.ErrTypeNotMatch).
+			Process(ctx, req)
 		ctx.JSON(iris.Map{
 			"err":  err,
 			"data": req,
@@ -68,5 +72,4 @@ func main() {
 	})
 	app.Run(iris.Addr(":8080"))
 }
-
 ```

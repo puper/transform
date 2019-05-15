@@ -16,9 +16,11 @@ func StringTrimSpace(a interface{}) (interface{}, error) {
 
 func StringToInt(a interface{}) (interface{}, error) {
 	if av, ok := a.(string); ok {
-		return strconv.Atoi(av)
+		if ai, err := strconv.Atoi(av); err == nil {
+			return ai, nil
+		}
 	}
-	return a, ErrTypeNotMatch
+	return 0, ErrTypeNotMatch
 }
 
 func StringToStringSlice(a interface{}) (interface{}, error) {
