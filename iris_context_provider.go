@@ -6,7 +6,6 @@ import (
 	"github.com/kataras/iris"
 )
 
-// !!!NOT COMPLETED!!!
 type IrisContextProvider struct {
 	context iris.Context
 }

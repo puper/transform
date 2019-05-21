@@ -1,7 +1,7 @@
 package transform
 
 type Transform struct {
-	only           map[string]bool
+	only           []string
 	except         map[string]bool
 	ignoreErrors   map[error]bool
 	fieldIn        FieldMapper
@@ -13,7 +13,7 @@ type Transform struct {
 
 func New() *Transform {
 	return &Transform{
-		only:          make(map[string]bool),
+		only:          make([]string, 0),
 		except:        make(map[string]bool),
 		ignoreErrors:  make(map[error]bool),
 		fieldHandlers: make(map[string][]FieldHandler),
@@ -32,7 +32,7 @@ func (this *Transform) Process(s, t interface{}) error {
 	tp := DetectProvider(t)
 	tfs := []string{}
 	if len(this.only) > 0 {
-		for f, _ := range this.only {
+		for _, f := range this.only {
 			tfs = append(tfs, f)
 		}
 	} else {
@@ -96,9 +96,7 @@ func (this *Transform) Process(s, t interface{}) error {
 }
 
 func (this *Transform) Only(fields ...string) *Transform {
-	for _, f := range fields {
-		this.only[f] = true
-	}
+	this.only = append(this.only, fields...)
 	return this
 }
 
